@@ -41,7 +41,7 @@ public class Course2MapperTest extends BaseTest{
     @Test
     public void findCourses2MapperTest(){
         QueryWrapper<Course2> objectQueryWrapper = new QueryWrapper<>();
-        objectQueryWrapper.eq("cid",1011213976115085312L);
+        objectQueryWrapper.eq("cid",1011284255428313089L);
         Course2 course2 = courses2Mapper.selectOne(objectQueryWrapper);
         System.out.println(course2);
     }

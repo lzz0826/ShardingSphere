@@ -44,7 +44,7 @@ public class MasterMapperTest extends BaseTest{
     //14:21:08.263 [main] INFO  ShardingSphere-SQL - Actual SQL: s2 ::: SELECT  masterid,mname,mstatus  FROM t_master
 
         for (int i = 0 ; i < 2 ; i++ ){
-            print(1011212792910315521L);
+            print(1011282973443489793L);
         }
 
     }
