@@ -15,6 +15,12 @@
     <relativePath/>
   </parent>
 
+
+  <modules>
+    <module>Sharding</module>
+  </modules>
+
+
   <dependencies>
 
     <dependency>
@@ -114,15 +120,6 @@
       <version>8.2.1</version>
     </dependency>
 
-
-
-
-
   </dependencies>
-
-
-  <modules>
-    <module>Sharding</module>
-  </modules>
 
 </project>
