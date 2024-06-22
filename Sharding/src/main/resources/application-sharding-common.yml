@@ -1,0 +1,99 @@
+
+spring:
+  shardingsphere:
+    datasource: # 數據源名稱 可多個
+      names: c1,edu1,edu2,u1,m1,s1,s2
+      #c1數據源 水平分表 庫course_db 表course_1 course_2
+      c1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: ${spring.datasource.driver-class-name}
+        url: jdbc:mysql://localhost:3306/course_db?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: ${spring.datasource.username}
+        password: ${spring.datasource.password}
+
+      #edu1,edu2數據源 水平分庫+水平分表 庫edu_db_1,edu_db_2  表 course_1 course_2
+      edu1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: ${spring.datasource.driver-class-name}
+        url: jdbc:mysql://localhost:3306/edu_db_1?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: ${spring.datasource.username}
+        password: ${spring.datasource.password}
+      edu2:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: ${spring.datasource.driver-class-name}
+        url: jdbc:mysql://localhost:3306/edu_db_2?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: ${spring.datasource.username}
+        password: ${spring.datasource.password}
+
+      #u1數據源 垂直分庫 單庫 單表
+      u1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: ${spring.datasource.driver-class-name}
+        url: jdbc:mysql://localhost:3306/user_db?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: ${spring.datasource.username}
+        password: ${spring.datasource.password}
+
+      ##########################################################################
+      #m1 主數據庫 數據源 13306
+      m1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: ${spring.datasource.driver-class-name}
+        url: jdbc:mysql://localhost:13306/user_db?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: ${spring.datasource.username}
+        password: ${spring.datasource.password}
+      #s1 從1據庫 數據源 13307
+      s1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: ${spring.datasource.driver-class-name}
+        url: jdbc:mysql://localhost:13307/user_db?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: ${spring.datasource.username}
+        password: ${spring.datasource.password}
+      #s2 從2數據庫 數據源 13308
+      s2:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: ${spring.datasource.driver-class-name}
+        url: jdbc:mysql://localhost:13308/user_db?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: ${spring.datasource.username}
+        password: ${spring.datasource.password}
+    ##########################################################################
+
+    sharding:
+      # 共用表
+      # 規則: 添加公共表在 edu_db_1 edu_db_2 t_user course_db 中都添加t_udict表 可以同事對三個庫裡的 t_udict 增刪改查
+      broadcast-tables: t_udict # 指定通用表(所有數據源都會被廣播 每個庫都要這張表)
+
+
+      # 主從(讀寫分離*只能放在數據源下) 1主 2從
+      # 規則:
+      # 1. 增刪改 主
+      # 2. 查詢 從1,2
+      # 數據同步需要在mysql中配置
+      master-slave-rules:
+        mm: #主從命名
+          master-data-source-name: m1
+          slave-data-source-names: s1,s2
+          load-balance-algorithm-type: round_robin #指定負載均衡算法 輪詢
+
+
+      tables: # 表分片策略 可多個
+        #公共表策略  會根據 表 entity來判斷使用哪個策略
+        t_udict:
+          #指定主鍵dict_id 生成策略 雪花 SNOWFLAKE
+          key-generator:
+            column: dict_id
+            type: SNOWFLAKE
+
+
+        # 讀寫分離策略 t_master分表策略 固定分配置 mm 的 t_master真實表
+        t_master:
+          actual-data-nodes: mm.t_master
+          #指定主鍵masterid 生成策略 雪花 SNOWFLAKE
+          key-generator:
+            column: masterid
+            type: SNOWFLAKE
+
+    #        default:
+
+    props:
+      sql:
+        show: true #打開sql輸出日誌

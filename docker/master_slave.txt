@@ -1,0 +1,64 @@
+
+7.master給副本用戶授權:
+mysql>GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%' identified by '123456';
+>flush privileges;
+>show master status \G;
+*************************** 1. row ***************************
+             File: mysql-bin.000003
+         Position: 589
+     Binlog_Do_DB:
+ Binlog_Ignore_DB:
+Executed_Gtid_Set:
+1 row in set (0.00 sec)
+
+
+
+查詢容器ip
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' 75000c343eb7
+
+
+
+8.slave副本用戶連接master配置 (每台從都需要設定 連接master)
+mysql>CHANGE MASTER TO
+MASTER_HOST='172.21.0.2', -- 配置主節點的IP
+MASTER_USER='repl', -- 連接主節點的副本賬戶
+MASTER_PASSWORD='123456', --連接主節點的副本賬戶密碼
+MASTER_LOG_FILE='mysql-bin.000003', -- 監聽主節點的bin-log文件
+MASTER_LOG_POS=589; --監聽主節點bin-log文件的起始位置
+
+如果執行不成功，先> stop slave， 然後>start slave;
+如果還不行>reset slave，然後重複8步驟。
+
+查看從節點狀態：>show slave status \G;
+                  Master_Host: 172.21.0.2
+                  Master_User: repl
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: mysql-bin.000003
+          Read_Master_Log_Pos: 589
+               Relay_Log_File: 0c2282640350-relay-bin.000002
+                Relay_Log_Pos: 320
+        Relay_Master_Log_File: mysql-bin.000003
+            Slave_IO_Running: Yes *成功是yes
+            Slave_SQL_Running: Yes *成功是yes
+
+如果出現：Slave_IO_Running: Connecting，則主要考慮網絡問題了:
+
+1）防火牆是否關閉 （systemctl status firewalld或者service iptables status）
+2）容器之間是否互相通訊 （ping 容器ID或者容器名稱， 安裝ping命令：apt-get update apt install iputils-ping）
+
+如果服務編排中沒配置網絡
+查看容器網絡：docker network ls
+
+新創建網橋 網橋名稱：my-bridge：
+docker network create -d bridge my-bridge
+
+將容器與網橋綁定 依次綁定需要通訊的容器
+docker network connect my-bridge 容器名稱或ID
+
+進入容器內部進行網絡通訊測試
+docker exec -it 容器名稱或ID bash
+ping 容器名或ID
+
+9.測試主從數據是否一致
+

@@ -1,0 +1,23 @@
+
+spring:
+  shardingsphere:
+    sharding:
+      tables: # 表分片策略 可多個
+
+        # 垂直拆分 專庫專表
+        # 規則: 1. 專庫 user_db 2. 專表 t_user
+        t_user: #會根據 表 entity來判斷使用哪個策略
+
+          #ds$->{0..1}.t_order$->{0..1}
+          #指定 專一 user_db庫 專一t_user表
+          actual-data-nodes: u1.t_user
+          #指定主鍵user_id 生成策略 雪花 SNOWFLAKE
+          key-generator:
+            column: user_id
+            type: SNOWFLAKE
+          table-strategy:
+            inline:
+              #指定分片策略 根據userId 分配到單一t_user表
+              sharding-column: user_id
+              algorithm-expression: t_user
+  #        default:

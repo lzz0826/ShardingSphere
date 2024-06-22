@@ -1,0 +1,53 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+
+
+spring:
+  application:
+    name: Sharding #服務名*服務註冊與發現時使用 如果是多台會共用名
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/course_db?useUnicode=true&characterEncoding=utf-8&useSSL=false #單台
+#    url: jdbc:mysql://localhost:13306/course_db?useUnicode=true&characterEncoding=utf-8&useSSL=false #1主2從
+    username: root
+    password: 123456
+
+  profiles:
+    include:
+      - sharding-common
+      - sharding-course
+      - sharding-course2
+      - sharding-user
+
+  main:
+    # 允許覆蓋相同名稱的 Bean 定義，僅限開發和調試階段使用
+    # 在生產環境中，不推薦啟用此選項，以避免意外的依賴注入問題和行為不一致
+    allow-bean-definition-overriding: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration # Migration 檔案存放的資料夾
+    # 以下是資料庫的連線設定
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    baseline-on-migrate: true
+    # 由於是用 postgres 所以需要設定 schema，並且如果不存在會自動建立
+
+
+
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml #MyBatis映射文件的位置
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #開啟SQL語句打印
+
+
+
+
+
+
+

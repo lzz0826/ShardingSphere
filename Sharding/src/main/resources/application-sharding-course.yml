@@ -1,0 +1,22 @@
+
+spring:
+  shardingsphere:
+    sharding:
+      tables: # 表分片策略 可多個
+
+        #水平拆分 水平分表測試 同樣的數據結構分別在不同表 course_1  course_2
+        #規則:在同一個庫 course_db 中 分別在 course_1(cid=偶數) course_2(cid=基數) 分散存
+        course: #會根據 表 entity來判斷使用哪個策略
+          #ds$->{0..1}.t_order$->{0..1}
+          #指定course表分佈情況 配置在哪個數據庫裏 表名稱都是什麼 c1.course_1 c1.course_2
+          actual-data-nodes: c1.course_$->{1..2}
+          #指定主鍵cid 生成策略 雪花 SNOWFLAKE
+          key-generator:
+            column: cid
+            type: SNOWFLAKE
+          table-strategy:
+            inline:
+              #指定分片策略 約定cid偶數時添加到 course_1 表  基數 c1.course_2表
+              sharding-column: cid
+              algorithm-expression: course_$->{cid % 2 +1}
+  #        default:

@@ -1,0 +1,86 @@
+version: '3.2'
+services:
+  mysql-master:
+    platform: linux/x86_64
+    image: oilrmutp57/mysql5.7:1.0
+    container_name: master
+    restart: always
+    privileged: true
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456  #主庫root用戶的密碼
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+      --max_allowed_packet=128M;
+    ports:
+      - 13306:3306  #映射宿主機端口：容器端口
+    volumes:  #宿主機配置目錄或文件掛載到容器
+      - ./master/conf/my.cnf:/etc/mysql/my.cnf
+      - ./master/mysql-files:/var/lib/mysql-files
+      - ./master/data:/var/lib/mysql
+      - ./master/log:/var/log/
+      - ./master/init:/docker-entrypoint-initdb.d
+    networks:
+      mysql-canal-network:
+        aliases:
+          - mysql-master #容器在網絡中別名
+  mysql-slave01:
+    platform: linux/x86_64
+    image: oilrmutp57/mysql5.7:1.0
+    container_name: slave01
+    restart: always
+    privileged: true
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456  #從庫root用戶的密碼
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+      --max_allowed_packet=128M;
+    ports:
+      - 13307:3306  #映射宿主機端口：容器端口
+    volumes:  #宿主機配置目錄或文件掛載到容器
+      - ./slave01/conf/my.cnf:/etc/mysql/my.cnf
+      - ./slave01/mysql-files:/var/lib/mysql-files
+      - ./slave01/data:/var/lib/mysql
+      - ./slave01/log:/var/log/
+      - ./slave01/init:/docker-entrypoint-initdb.d
+    networks:
+      mysql-canal-network:
+        aliases:
+          - mysql-slave01 #容器在網絡中別名
+  mysql-slave02:
+    platform: linux/x86_64
+    image: oilrmutp57/mysql5.7:1.0
+    container_name: slave02
+    restart: always
+    privileged: true
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456  #從庫root用戶的密碼
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+      --max_allowed_packet=128M;
+    ports:
+      - 13308:3306  #映射宿主機端口：容器端口
+    volumes: #宿主機配置目錄或文件掛載到容器
+      - ./slave02/conf/my.cnf:/etc/mysql/my.cnf
+      - ./slave02/mysql-files:/var/lib/mysql-files
+      - ./slave02/data:/var/lib/mysql
+      - ./slave02/log:/var/log/
+      - ./slave02/init:/docker-entrypoint-initdb.d
+    networks:
+      mysql-canal-network:
+        aliases:
+          - mysql-slave02 #容器在網絡中別名
+networks:  #定義容器連接網絡
+  mysql-canal-network:
+    driver: bridge
