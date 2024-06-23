@@ -55,9 +55,11 @@
 
 ## 庫內分表：
 库内分表是在一个数据库中的某张表，数据行数达到了数据库读写性能的瓶颈的时候，将数据平摊到数据表结构一样的数据表中，已达到减少单张表数据，提升数据表读写性能的目的。
-![image](https://github.com/lzz0826/EventualConsistency/blob/main/img/10.png)
+![image](https://raw.githubusercontent.com/lzz0826/ShardingSphere/main/images/005.webp)
 
 ## 分庫分表：
-![image](https://github.com/lzz0826/EventualConsistency/blob/main/img/10.png)
+库内分表只解决了一个库内单张表的压力，但是如果查询的比较频繁的话，库内分表的那个数据库的整体性能还是很容易达到瓶颈。因为一个物理机的CPU、内容、网络IO都是有限的，所以就需要多个库去分担单库的IO压力。
+分库分表就是将原先单库分好的数据表，平摊到各个数据库中，目的就是为了减轻单库的IO性能压力
+![image](https://raw.githubusercontent.com/lzz0826/ShardingSphere/main/images/006.webp)
 
 
