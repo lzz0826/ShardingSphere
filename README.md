@@ -82,6 +82,8 @@
 - 增刪改 主1<br />
 - 查詢 從1,2<br />
 - 數據同步需要在mysql中配置<br />
+![image](https://raw.githubusercontent.com/lzz0826/ShardingSphere/main/images/008.png)
+
 
 
 
