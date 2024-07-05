@@ -9,6 +9,8 @@
 將業務的不同分類，不同的業務劃分到不同的應用。這種拆分往往是根據系統的改造，將原來的功能模組依照更細粒度的拆分成多個弱耦合的服務
 
 ## 垂直分庫：
+參考:ShardingSphere/Sharding/src/main/resources/application-sharding-user.yml<br />
+<br />
 按照業務模塊將數據分散到不同的數據庫中，每個數據庫存儲一個業務模塊的數據。
 
 假設我們有一個外賣系統，包含 商品管理 訂單管理 用戶管理 三個主要業務模塊。我們可以按照業務將數據垂直拆分成三個數據庫：
@@ -66,10 +68,13 @@
 
 ## 庫內分表：
 參考:ShardingSphere/Sharding/src/main/resources/application-sharding-course.yml<br />
+<br />
 庫內分表是在一個數據庫中的某張表，數據行數達到了數據庫讀寫性能的瓶頸的時候，將數據平攤到數據表結構一樣的數據表中，已達到減少單張表數據，提升數據表讀寫性能的目的。
 ![image](https://raw.githubusercontent.com/lzz0826/ShardingSphere/main/images/005.webp)
 
 ## 分庫分表：
+參考:ShardingSphere/Sharding/src/main/resources/application-sharding-course2.yml<br />
+<br />
 庫內分表只解決了一個庫內單張表的壓力，但是如果查詢的比較頻繁的話，庫內分表的那個數據庫的整體性能還是很容易達到瓶頸。因為一個物理機的CPU、內容、網絡IO都是有限的，所以就需要多個庫去分擔單庫的IO壓力。
 分庫分表就是將原先單庫分好的數據表，平攤到各個數據庫中，目的就是為了減輕單庫的IO性能壓力
 ![image](https://raw.githubusercontent.com/lzz0826/ShardingSphere/main/images/006.webp)
@@ -95,6 +100,8 @@
 
 
 ### 規則(1主 2從):
+參考:ShardingSphere/Sharding/src/main/resources/application-sharding-common.yml<br />
+<br />
 - 增刪改 主1<br />
 - 查詢 從1,2<br />
 - 數據同步需要在mysql中配置<br />
