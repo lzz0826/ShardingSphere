@@ -65,6 +65,7 @@
 水平拆分通常依據的主要考量是數據的均衡分佈和負載均衡
 
 ## 庫內分表：
+參考:ShardingSphere/Sharding/src/main/resources/application-sharding-course.yml<br />
 庫內分表是在一個數據庫中的某張表，數據行數達到了數據庫讀寫性能的瓶頸的時候，將數據平攤到數據表結構一樣的數據表中，已達到減少單張表數據，提升數據表讀寫性能的目的。
 ![image](https://raw.githubusercontent.com/lzz0826/ShardingSphere/main/images/005.webp)
 
