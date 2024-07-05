@@ -87,6 +87,12 @@ spring:
         # 讀寫分離策略 t_master分表策略 固定分配置 mm 的 t_master真實表
         t_master:
           actual-data-nodes: mm.t_master
+#          這裡可以再加上其他策略例如 水平拆分 在主庫上配置水平分表策略。從庫會自動同步主庫的數據
+#          actual-data-nodes: mm.t_master_$->{0..1} # 表示 t_master 表被分成 t_master_0 和 t_master_1
+#          table-strategy:
+#            inline:
+#              sharding-column: masterid
+#              algorithm-expression: t_master_$->{masterid % 2} # 根據 masterid 取模進行分片
           #指定主鍵masterid 生成策略 雪花 SNOWFLAKE
           key-generator:
             column: masterid
